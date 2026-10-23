@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#16324f">
+<title>SIPENA SMK — Login Guru</title>
+<style>
+:root{--navy:#16324f;--blue:#2463eb;--bg:#f4f7fb;--ink:#1e293b;--muted:#64748b;--line:#e2e8f0}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--navy);color:white;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+header h1{font-size:21px;margin:0}header p{margin:3px 0 0;color:#dbeafe;font-size:13px}
+main{max-width:1100px;margin:24px auto;padding:0 16px}.auth{max-width:440px;margin:7vh auto;background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 10px 30px #0f172a0c}
+.logo{width:60px;height:60px;border-radius:16px;background:var(--navy);color:white;display:grid;place-items:center;font-size:27px;margin:0 auto 12px}
+h2{text-align:center;margin:0 0 4px}.sub{text-align:center;color:var(--muted);margin:0 0 20px;font-size:14px}
+label{display:block;font-size:13px;color:#475569;margin:12px 0}input,select,textarea{display:block;width:100%;margin-top:5px;border:1px solid #cbd5e1;border-radius:8px;padding:11px;background:white;font:inherit;color:var(--ink)}
+button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font:inherit;font-weight:650}.primary{background:var(--blue);color:white}.secondary{background:#eef2ff;color:#1e40af}.danger{background:#fee2e2;color:#991b1b}.block{width:100%;margin-top:10px}.msg{font-size:13px;margin-top:12px;color:#b91c1c}.muted{color:var(--muted);font-size:13px}
+#app{display:none}.layout{display:grid;grid-template-columns:220px 1fr;gap:18px}.side,.panel,.metric{background:white;border:1px solid var(--line);border-radius:13px;padding:15px}.side button{display:block;width:100%;text-align:left;background:transparent;margin:2px 0}.side button.active,.side button:hover{background:#eaf1ff;color:#1745a8}
+h3{margin:0 0 12px}.content h2{text-align:left}.content .sub{text-align:left}
+.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}.metric .num{font-size:26px;font-weight:750}.metric .small{color:var(--muted);font-size:12px}
+.panel{margin:12px 0}.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.full{grid-column:1/-1}
+.tablewrap{overflow:auto}table{width:100%;border-collapse:collapse;font-size:13px}th,td{padding:9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f8fafc}
+.empty{color:var(--muted);text-align:center;padding:18px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.status{font-size:12px;background:#dcfce7;color:#166534;padding:5px 9px;border-radius:999px}.warning{background:#fffbeb;border-left:4px solid #f59e0b;color:#78350f;padding:12px;border-radius:7px;font-size:13px}
+.hidden{display:none!important}
+@media(max-width:800px){.layout{grid-template-columns:1fr}.side{display:flex;overflow:auto;gap:4px}.side button{white-space:nowrap;width:auto}.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.auth{padding:20px;margin-top:4vh}}
+@media print{header,.side,.noprint,button{display:none!important}main{margin:0;padding:0}.layout{display:block}.panel,.metric{break-inside:avoid}}
+</style>
+</head>
+<body>
+<header><div><h1>SIPENA SMK</h1><p>Sistem Informasi Perangkat Pembelajaran</p></div><div id="headerRight"></div></header>
+<main>
+<section id="loginView" class="auth">
+<div class="logo">🎓</div><h2>Login Guru</h2><p class="sub">Masuk ke akun pribadi SIPENA SMK</p>
+<form id="loginForm">
+<label>Email guru<input id="email" type="email" autocomplete="username" required placeholder="nama@email.com"></label>
+<label>Kata sandi<input id="password" type="password" autocomplete="current-password" required placeholder="Kata sandi akun"></label>
+<button class="primary block" type="submit">Masuk</button>
+</form>
+<button class="secondary block" id="resetBtn">Lupa kata sandi?</button>
+<div id="loginMsg" class="msg" role="status"></div>
+<p class="muted">Akun dibuat oleh pemilik aplikasi melalui Firebase Console. Pendaftaran umum tidak disediakan agar akses tetap terbatas.</p>
+</section>
+<section id="app">
+<div class="top"><div><h2 id="welcome">Dashboard</h2><p class="muted">Data disimpan ke akun online Anda.</p></div><div><span class="status" id="cloudStatus">Terhubung</span> <button id="logoutBtn" class="secondary noprint">Keluar</button></div></div>
+<div class="layout">
+<nav class="side noprint" id="nav">
+<button class="active" data-page="dashboard">🏠 Dashboard</button><button data-page="guru">👨‍🏫 Profil Guru</button><button data-page="siswa">👩‍🎓 Data Siswa</button><button data-page="agenda">📅 Agenda Harian</button><button data-page="prota">📘 Program Tahunan</button><button data-page="prosem">📗 Program Semester</button><button data-page="modul">📝 Modul Ajar</button><button data-page="presensi">📋 Presensi</button><button data-page="nilai">📊 Daftar Nilai</button><button data-page="materi">📚 Materi Pembelajaran</button><button data-page="laporan">🖨️ Laporan & Ekspor</button>
+</nav>
+<div class="content">
+<section class="page" id="dashboard"><h2>Dashboard</h2><p class="sub">Ringkasan administrasi pembelajaran.</p><div class="metrics"><div class="metric"><div class="small">Jumlah siswa</div><div class="num" id="mSiswa">0</div></div><div class="metric"><div class="small">Agenda harian</div><div class="num" id="mAgenda">0</div></div><div class="metric"><div class="small">Data nilai</div><div class="num" id="mNilai">0</div></div><div class="metric"><div class="small">Materi tersimpan</div><div class="num" id="mMateri">0</div></div></div><div class="panel"><h3>Selamat datang</h3><p>Mulai dengan melengkapi profil guru dan memasukkan data siswa secara manual. Setelah itu, catat agenda, Prota, Prosem, modul ajar, presensi, nilai, serta materi.</p></div><div class="warning">Gunakan akun pribadi dan jangan membagikan kata sandi. Data baru tersinkronisasi jika status cloud menunjukkan terhubung.</div></section>
+<section class="page hidden" id="guru"><h2>Profil Guru</h2><div class="panel"><form id="guruForm" class="formgrid"><label>Nama guru<input name="nama" required></label><label>NIP/NUPTK<input name="nip"></label><label>Nama sekolah<input name="sekolah" value="SMKN 5 Bulukumba"></label><label>Mata pelajaran<input name="mapel"></label><label>Kelas/program keahlian<input name="kelas" placeholder="X TKJ"></label><label>Tahun ajaran<input name="tahun" placeholder="2026/2027"></label><div class="full"><button class="primary">Simpan profil</button></div></form></div></section>
+<section class="page hidden" id="siswa"><h2>Data Siswa</h2><div class="panel"><form id="siswaForm" class="formgrid"><label>NIS/NISN<input name="nis" required></label><label>Nama lengkap<input name="nama" required></label><label>Kelas<input name="kelas" required></label><label>Jenis kelamin<select name="jk"><option value="">Pilih</option><option>Laki-laki</option><option>Perempuan</option></select></label><div class="full"><button class="primary">Simpan siswa</button></div></form></div><div class="panel"><div id="siswaTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="agenda"><h2>Agenda Harian</h2><div class="panel"><form id="agendaForm" class="formgrid"><label>Tanggal<input type="date" name="tanggal" required></label><label>Kelas<input name="kelas" required></label><label>Mata pelajaran<input name="mapel" required></label><label>Materi/topik<input name="materi" required></label><label class="full">Kegiatan/catatan<textarea name="catatan"></textarea></label><div class="full"><button class="primary">Simpan agenda</button></div></form></div><div class="panel"><div id="agendaTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="prota"><h2>Program Tahunan (Prota)</h2><div class="panel"><form id="protaForm" class="formgrid"><label>Tahun ajaran<input name="tahun" required></label><label>Mata pelajaran<input name="mapel" required></label><label>Semester<select name="semester"><option>Ganjil</option><option>Genap</option></select></label><label>Materi/elemen<input name="materi" required></label><label>Alokasi waktu (JP)<input type="number" name="jp" min="1" required></label><label>Catatan<input name="catatan"></label><div class="full"><button class="primary">Tambah Prota</button></div></form></div><div class="panel"><div id="protaTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="prosem"><h2>Program Semester (Prosem)</h2><div class="panel"><form id="prosemForm" class="formgrid"><label>Tahun ajaran<input name="tahun" required></label><label>Semester<select name="semester"><option>Ganjil</option><option>Genap</option></select></label><label>Bulan/minggu<input name="waktu" required placeholder="Juli, minggu ke-1"></label><label>Mata pelajaran<input name="mapel" required></label><label class="full">Materi/tujuan pembelajaran<input name="materi" required></label><div class="full"><button class="primary">Tambah Prosem</button></div></form></div><div class="panel"><div id="prosemTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="modul"><h2>Modul Ajar</h2><div class="panel"><form id="modulForm" class="formgrid"><label>Judul/topik<input name="judul" required></label><label>Kelas/fase<input name="kelas" required placeholder="X/Fase E"></label><label class="full">Capaian pembelajaran (CP)<textarea name="cp"></textarea></label><label class="full">Tujuan pembelajaran (TP)<textarea name="tp"></textarea></label><label class="full">Langkah pembelajaran<textarea name="langkah"></textarea></label><label class="full">Asesmen/rubrik<textarea name="asesmen"></textarea></label><div class="full"><button class="primary">Simpan modul</button></div></form></div><div class="panel"><div id="modulTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="presensi"><h2>Presensi Siswa</h2><div class="panel"><form id="presensiForm" class="formgrid"><label>Tanggal<input type="date" name="tanggal" required></label><label>Siswa<select name="siswa" id="presensiSiswa" required></select></label><label>Kelas<input name="kelas" required></label><label>Status<select name="status"><option>Hadir</option><option>Izin</option><option>Sakit</option><option>Alpa</option></select></label><label class="full">Catatan<input name="catatan"></label><div class="full"><button class="primary">Simpan presensi</button></div></form></div><div class="panel"><div id="presensiTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="nilai"><h2>Daftar Nilai</h2><div class="panel"><form id="nilaiForm" class="formgrid"><label>Siswa<select name="siswa" id="nilaiSiswa" required></select></label><label>Kelas<input name="kelas" required></label><label>Jenis penilaian<input name="jenis" required placeholder="Tugas/praktik/tes"></label><label>Nilai (0–100)<input name="nilai" type="number" min="0" max="100" required></label><label class="full">Catatan<input name="catatan"></label><div class="full"><button class="primary">Simpan nilai</button></div></form></div><div class="panel"><div id="nilaiTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="materi"><h2>Materi Pembelajaran</h2><div class="panel"><form id="materiForm" class="formgrid"><label>Judul materi<input name="judul" required></label><label>Kelas/mata pelajaran<input name="kelas" required></label><label class="full">Ringkasan materi<textarea name="isi"></textarea></label><label class="full">Tautan dokumen (opsional)<input name="url" type="url" placeholder="https://..."></label><div class="full"><button class="primary">Simpan materi</button></div></form></div><div class="panel"><div id="materiTable" class="tablewrap"></div></div></section>
+<section class="page hidden" id="laporan"><h2>Laporan & Ekspor</h2><div class="panel"><p>Unduh cadangan semua data atau CSV yang dapat dibuka di Excel.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="primary" id="jsonBtn">Unduh semua data (JSON)</button><button class="secondary" id="csvSiswa">Data siswa (CSV)</button><button class="secondary" id="csvNilai">Daftar nilai (CSV)</button><button class="secondary" onclick="window.print()">Cetak halaman</button></div></div></section>
+</div></div></section>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+
+/* TEMPEL konfigurasi Firebase Web App milik Anda di objek di bawah. */
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY",
+  authDomain: "ISI_PROJECT_ID.firebaseapp.com",
+  projectId: "ISI_PROJECT_ID",
+  appId: "ISI_APP_ID"
+};
+const configReady = !Object.values(firebaseConfig).some(v => String(v).startsWith("ISI_"));
+let auth, db, currentUser=null;
+const keys=['guru','siswa','agenda','prota','prosem','modul','presensi','nilai','materi'];
+const data=Object.fromEntries(keys.map(k=>[k,[]]));
+const $=id=>document.getElementById(id);
+const msg=(s,err=true)=>{ $('loginMsg').textContent=s; $('loginMsg').style.color=err?'#b91c1c':'#166534'; };
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));$(id).classList.remove('hidden');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));window.scrollTo(0,0)}
+document.querySelectorAll('#nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function renderTable(target,k,cols){const el=$(target),rows=data[k];if(!rows.length){el.innerHTML='<div class="empty">Belum ada data. Tambahkan melalui formulir di atas.</div>';return}el.innerHTML='<table><thead><tr>'+cols.map(c=>'<th>'+c[1]+'</th>').join('')+'<th>Aksi</th></tr></thead><tbody>'+rows.map((r,i)=>'<tr>'+cols.map(c=>'<td>'+esc(r[c[0]])+'</td>').join('')+'<td><button class="danger" data-del="'+k+':'+i+'">Hapus</button></td></tr>').join('')+'</tbody></table>';el.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',async()=>{const [key,ix]=b.dataset.del.split(':');if(confirm('Hapus data ini?')){data[key].splice(Number(ix),1);await saveKey(key)}}))}
+async function saveKey(k){if(!currentUser)return;try{$('cloudStatus').textContent='Menyimpan…';await setDoc(doc(db,'users',currentUser.uid,'appdata',k),{items:data[k],updatedAt:new Date().toISOString()});$('cloudStatus').textContent='Tersimpan online';renderAll()}catch(e){$('cloudStatus').textContent='Gagal menyimpan';alert('Data belum berhasil disimpan online. Periksa koneksi dan Firebase Security Rules.');console.error(e)}}
+async function loadAll(){for(const k of keys){try{const snap=await getDoc(doc(db,'users',currentUser.uid,'appdata',k));data[k]=snap.exists()&&Array.isArray(snap.data().items)?snap.data().items:[]}catch(e){console.error(e);throw e}}renderAll();$('cloudStatus').textContent='Tersinkron online'}
+function bind(formId,k){$(formId).addEventListener('submit',async e=>{e.preventDefault();const o=Object.fromEntries(new FormData(e.target).entries());data[k].push(o);await saveKey(k);e.target.reset()})}
+keys.filter(k=>k!=='guru').forEach(k=>bind(k+'Form',k));
+$('guruForm').addEventListener('submit',async e=>{e.preventDefault();data.guru=[Object.fromEntries(new FormData(e.target).entries())];await saveKey('guru')});
+function fillSelect(id){const el=$(id),old=el.value;el.innerHTML='<option value="">Pilih siswa</option>'+data.siswa.map(s=>'<option>'+esc(s.nama)+'</option>').join('');if([...el.options].some(o=>o.value===old))el.value=old}
+function renderAll(){ $('mSiswa').textContent=data.siswa.length;$('mAgenda').textContent=data.agenda.length;$('mNilai').textContent=data.nilai.length;$('mMateri').textContent=data.materi.length;
+renderTable('siswaTable','siswa',[['nis','NIS/NISN'],['nama','Nama'],['kelas','Kelas'],['jk','Jenis kelamin']]);renderTable('agendaTable','agenda',[['tanggal','Tanggal'],['kelas','Kelas'],['mapel','Mapel'],['materi','Materi'],['catatan','Catatan']]);renderTable('protaTable','prota',[['tahun','Tahun'],['mapel','Mapel'],['semester','Semester'],['materi','Materi'],['jp','JP'],['catatan','Catatan']]);renderTable('prosemTable','prosem',[['tahun','Tahun'],['semester','Semester'],['waktu','Waktu'],['mapel','Mapel'],['materi','Materi']]);renderTable('modulTable','modul',[['judul','Judul'],['kelas','Kelas/fase'],['tp','TP'],['asesmen','Asesmen']]);renderTable('presensiTable','presensi',[['tanggal','Tanggal'],['siswa','Siswa'],['kelas','Kelas'],['status','Status'],['catatan','Catatan']]);renderTable('nilaiTable','nilai',[['siswa','Siswa'],['kelas','Kelas'],['jenis','Jenis'],['nilai','Nilai'],['catatan','Catatan']]);renderTable('materiTable','materi',[['judul','Judul'],['kelas','Kelas/mapel'],['isi','Ringkasan'],['url','Tautan']]);fillSelect('presensiSiswa');fillSelect('nilaiSiswa');}
+function download(name,content,type){const a=document.createElement('a');const url=URL.createObjectURL(new Blob([content],{type}));a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+function exportCSV(k){if(!data[k].length){alert('Belum ada data.');return}const headers=[...new Set(data[k].flatMap(o=>Object.keys(o)))];const csv=[headers.join(','),...data[k].map(r=>headers.map(h=>'"'+String(r[h]??'').replace(/"/g,'""')+'"').join(','))].join('\r\n');download('sipena-'+k+'.csv','\ufeff'+csv,'text/csv;charset=utf-8')}
+$('jsonBtn').addEventListener('click',()=>download('sipena-smk-cadangan.json',JSON.stringify(data,null,2),'application/json'));
+$('csvSiswa').addEventListener('click',()=>exportCSV('siswa'));$('csvNilai').addEventListener('click',()=>exportCSV('nilai'));
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();if(!configReady){msg('Aplikasi belum dikonfigurasi. Ikuti panduan SETUP.txt untuk menghubungkan Firebase.');return}try{await signInWithEmailAndPassword(auth,$('email').value.trim(),$('password').value);msg('',false)}catch(err){msg('Login gagal. Periksa email dan kata sandi akun Anda.')}});
+$('resetBtn').addEventListener('click',async()=>{if(!configReady){msg('Konfigurasi Firebase belum dipasang. Ikuti panduan SETUP.txt.');return}const email=$('email').value.trim();if(!email){msg('Masukkan email terlebih dahulu.');return}try{await sendPasswordResetEmail(auth,email);msg('Jika email terdaftar, tautan reset kata sandi akan dikirim.',false)}catch(e){msg('Tidak dapat mengirim tautan reset. Periksa email dan pengaturan Firebase.')}});
+$('logoutBtn').addEventListener('click',()=>signOut(auth));
+if(configReady){const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);onAuthStateChanged(auth,async user=>{currentUser=user;if(user){$('loginView').style.display='none';$('app').style.display='block';$('headerRight').textContent=user.email;try{await loadAll()}catch(e){$('cloudStatus').textContent='Periksa konfigurasi';alert('Tidak bisa membaca data. Periksa Firestore dan aturan keamanan.')}}else{$('loginView').style.display='block';$('app').style.display='none';$('headerRight').textContent=''}})}else{msg('Tahap konfigurasi diperlukan sebelum login dapat digunakan.')}
+</script>
+</body></html>
